@@ -21,7 +21,7 @@ ganharam, antes e depois (diferenças em diferenças com efeitos fixos).
 | CHI evitado por religador instalado | **≈ 4.600 consumidores-hora/ano** (IC 95%: 2.100 a 6.800), 0,13 min de DEC da EMT |
 | Valor por religador | **R$ 27 mil/ano** na visão social; R$ 6,7 mil/ano só em compensações |
 | VPL em 20 anos, religador de R$ 160 mil (custo ilustrativo) | **+R$ 107 mil** na visão social; **−R$ 94 mil** só com compensações |
-| Por onde o efeito passa | **duração** da interrupção (−20%), não o número de falhas |
+| Por onde o efeito passa | pela **duração** da interrupção, não pelo número de falhas (os −20% na duração estão superestimados por uma tendência de queda anterior; ver Limitações) |
 | Custo de **1 ponto percentual** de indisponibilidade da telemetria dos 4.000 religadores | **0,7 a 1,4 min de DEC/ano**; R$ 134 a 268 mil/ano (social) |
 | As 10 subestações mais críticas (10% de 104) | concentram **33% do CHI** |
 
