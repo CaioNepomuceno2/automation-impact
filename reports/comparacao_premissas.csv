@@ -1,0 +1,3 @@
+intervencao,premissa_reducao_chi_alimentador_pct,medido_pct,ic95,nota
+religador (pacote),-22.5,-16.581138949733653,"[-24.8, -7.5]","premissa: eficácia 0,45 x alcance 0,5 por pacote de até 4 religadores; medido: evento típico de +2 a +5"
+telecomando (2 chaves),-21.0,1.7384583628905492,"[-1.8, 5.4]","premissa: eficácia 0,35 x alcance 0,6; medido: 2 x efeito por equipamento telecomandado na rede (TWFE)"
