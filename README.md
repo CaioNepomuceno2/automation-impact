@@ -27,6 +27,87 @@ ganharam, antes e depois (diferenças em diferenças com efeitos fixos).
 
 ![event study](reports/figures/01_event_study.png)
 
+**O que isso significa:** o gráfico compara alimentadores que ganharam religadores com alimentadores parecidos
+que não ganharam. Antes da instalação, os dois grupos andam juntos (pontos em torno de zero); depois, o CHI dos
+tratados cai e continua caindo. É esse padrão que permite ler a queda como efeito do religador, e não como
+coincidência. O detalhe de cada número está nas seções 1 a 5, e a metodologia completa em
+[`docs/metodologia.md`](docs/metodologia.md).
+
+## Na prática: o que muda para quem decide
+
+### O problema hoje
+* **A eficácia de catálogo vira número de plano.** O plano de automação costuma usar eficácias de catálogo. No
+  projeto irmão, o catálogo assumia −22,5% de CHI para um pacote de religadores e −21% para o telecomando. O
+  medido aqui foi −16,6% e efeito nulo, respectivamente. Refazendo a carteira de R$ 20 mi com os valores
+  medidos, o VPL estimado cai de R$ 108 mi para R$ 53 mi
+  ([`distribution-asset-risk`, seção 7](https://github.com/CaioNepomuceno2/distribution-asset-risk#7-e-se-as-eficácias-forem-as-medidas-nos-dados)).
+  Um plano feito com o catálogo promete o dobro do que os dados sustentam.
+* **A disponibilidade da telemetria é acompanhada como indicador de TI, sem preço.** Sem saber quanto DEC
+  cada ponto de indisponibilidade custa, a manutenção de comunicação (rádio, modem, alimentação dos
+  equipamentos remotos) disputa orçamento sem argumento.
+* **O atendimento espera mais do que viaja.** Em 2025, 89% do tempo das 341 mil ocorrências emergenciais da EMT
+  foi preparo (mediana de 4,7 h), contra 6% de deslocamento. Saber na hora qual equipamento abriu e onde está o
+  defeito é exatamente o que a supervisão do religador entrega.
+
+### O que se ganha
+
+| Ganho | Quanto | De onde vem o número |
+|---|---|---|
+| Eficácia real do religador para o plano | −16,6% no CHI do alimentador (IC 95%: −24,8% a −7,5%) | **Medido** (DiD empilhado, 116 eventos) |
+| Valor de cada religador | ≈ 4.600 consumidores-hora/ano evitados; 0,13 min de DEC; R$ 27 mil/ano (social) ou R$ 6,7 mil/ano (compensações) | **Medido** × R$/CHI: o de compensações é empírico; o social depende do custo da energia não suprida (premissa) |
+| Preço da indisponibilidade da telemetria | 1 p.p. dos 4.000 religadores = 0,7 a 1,4 min de DEC/ano; R$ 134 a 268 mil/ano (social) | Efeito **medido** + **premissa** da fração do benefício que depende de comunicação (por isso é faixa) |
+| Meta de disponibilidade justificável | subir de 95% para 99% vale de 3 a 6 min de DEC/ano | mesma conta, 4 p.p. |
+| Onde instalar os próximos | 199 alimentadores longos e pouco protegidos; +2 religadores em cada: R$ 64 mi, 78 min de DEC/ano, VPL de +R$ 100 mi (social) | **Extrapolação** do efeito médio, ilustrativa (`reports/subestacoes.csv`) |
+| Onde olhar primeiro | 10 das 104 subestações concentram 33% do CHI | **Medido** (2023-2025) |
+| Evitar gasto sem evidência | o telecomando cadastral não mostra efeito; o catálogo assumia −21% | **Medido**, com a ressalva de que o flag de telecomando da BDGD é instável |
+
+### Por que aplicar
+* **Transforma disponibilidade em DEC.** Com o preço do ponto percentual, a meta de disponibilidade de
+  comunicação dos religadores passa a ser discutida em minutos de DEC e em R$, na mesma régua do plano de
+  investimento.
+* **Plano de automação com eficácia medida.** Um plano baseado no histórico da própria rede é mais fácil de
+  defender perante a diretoria e o regulador do que um baseado em catálogo, e evita prometer o dobro do que
+  os dados sustentam.
+* **Confiabilidade como valor para o cliente.** O religador se paga na visão social (payback de cerca de 6 anos), mas não só
+  com compensações. Esse é um argumento quantitativo para discutir confiabilidade como valor para o cliente,
+  não só como custo regulatório.
+* **Risco de não fazer.** Sem medir, o orçamento pode ir para equipamentos cuja eficácia não aparece nos dados
+  (o telecomando cadastral) enquanto a comunicação dos religadores existentes, que sustenta parte do benefício
+  medido, fica sem prioridade.
+
+### Como aplicar (roteiro de adoção)
+1. **Trocar o cadastro público pelos registros internos.** O ponto fraco deste estudo é datar a instalação pela
+   diferença entre cadastros da BDGD (2.100 religadores com data de conexão em 2024, por recadastramento). Com a
+   data de comissionamento de cada religador no SCADA ou no sistema de obras, o tratamento fica exato. Basta
+   gerar os mesmos arquivos por alimentador × ano que `scripts/01_build_equipamentos.py` produz.
+2. **Medir a premissa da comunicação, em vez de assumir.** Com a série de disponibilidade de comunicação por
+   religador (% do tempo online, assertividade de comandos) e o log de eventos (abertura, religamento,
+   bloqueio), dá para comparar a duração das interrupções em que o religador estava supervisionado com as em
+   que não estava. Isso substitui a faixa de 0,7 a 1,4 min por um número medido. O estimador já está pronto em
+   `autoimpact.modelo.efeito` (PPML com efeitos fixos).
+3. **Fila de manutenção de comunicação por valor.** Ordenar os religadores com comunicação falhando pelo CHI do
+   alimentador × efeito marginal × fração dependente de comunicação (`autoimpact.valor.custo_indisponibilidade`).
+   A equipe de telecom atende primeiro onde a indisponibilidade custa mais DEC.
+4. **Piloto com grupo de controle.** Escolher parte dos alimentadores candidatos de `reports/subestacoes.csv`
+   para receber religadores e manter outros parecidos sem obra no mesmo período. KPI: CHI e duração por
+   alimentador, 12 a 24 meses depois, pelo mesmo DiD de `scripts/02_estimar.py`.
+5. **Rotina.** Mensal: painel em Power BI com disponibilidade por religador e o DEC/R$ perdido no mês (CSVs de
+   `reports/` ou Parquets do pipeline). Anual: reestimar o efeito com o novo cadastro e atualizar as eficácias em
+   `configs/intervencoes.yaml` do `distribution-asset-risk`. Quem usa: operação e telecom (disponibilidade),
+   planejamento (onde instalar), regulação (DEC e compensações).
+6. **Critério de sucesso.** Redução de CHI nos alimentadores do piloto dentro do IC medido aqui, e queda de
+   duração nas interrupções com religador supervisionado maior do que nas sem supervisão.
+
+### Limites de uso
+* **Efeito médio, não por alimentador.** O −16,6% vale para os alimentadores que receberam pacotes, em geral
+  maiores e mais críticos. Em alimentadores curtos ou já bem protegidos, o efeito tende a ser menor.
+* **Um religador sozinho não tem efeito detectável** (−4,1%, não significativo). O resultado é de pacotes de 2 ou
+  mais.
+* **Não usar o resultado do telecomando para desligar automação.** O efeito nulo vem de um flag cadastral
+  instável; ele indica que a premissa de catálogo não tem apoio nestes dados, não que a automação não funcione.
+* **A faixa de custo da indisponibilidade depende de uma premissa.** Ela deve ser trocada pelo número medido no
+  passo 2 antes de entrar em um plano.
+
 ## 1. O efeito medido
 
 **Desenho.** Um alimentador é "tratado" no primeiro ano em que o cadastro mostra 2 ou mais religadores novos
@@ -126,6 +207,19 @@ carteira de investimentos com eficácias **ilustrativas**. Com os dados:
 
 **Resultado-chave:** o religador se paga na visão social (payback de cerca de 6 anos), mas **não se paga só com
 compensações**. É a mesma conclusão do projeto irmão, agora com eficácia medida.
+
+## Metodologia em resumo
+1. **Painel** alimentador × ano (2019-2025) com CHI, nº de falhas, consumidores e duração (interrupções da ANEEL)
+   e o nº de religadores do cadastro de 31/12 do ano anterior (BDGD).
+2. **Tratamento:** primeiro ano com +2 religadores que permanecem nos cadastros seguintes. **Controles:**
+   alimentadores cujo nº de religadores nunca variou mais que 1.
+3. **Estimação:** diferenças em diferenças empilhado por coorte, Poisson com efeitos fixos (PPML), erros-padrão
+   por alimentador; event study para checar tendências anteriores; placebo e testes de robustez.
+4. **Canais:** o CHI é decomposto em nº de falhas × consumidores por falha × duração, cada um estimado à parte.
+5. **Valor:** o efeito vira CHI evitado, minutos de DEC e R$ pelo R$/CHI do projeto irmão; o custo da
+   indisponibilidade aplica a fração do benefício que depende de comunicação.
+
+Fórmulas, premissas e como interpretar cada número: [`docs/metodologia.md`](docs/metodologia.md).
 
 ## Decisões de dados
 
