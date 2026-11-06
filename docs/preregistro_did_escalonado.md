@@ -169,4 +169,20 @@ Produzidos por `scripts/05_did_escalonado.py`.
 
 ## Registro de desvios
 
-(vazio no momento do commit)
+Registrados depois de rodar, em 06/11/2026. Nenhum muda uma regra de relato.
+
+1. **Linha de base.** O critério da seção 7 foi aplicado ao CHI e à duração (mesmo nº de eventos e de controles,
+   116 e 209; efeitos idênticos até 1e-7; CHI evitado por religador idêntico). Os arquivos de continuidade da ANEEL
+   republicados em 05/11/2026 trazem cada linha duplicada (ver `docs/dados.md`), o que dobra o R$/CHI de compensação do
+   projeto irmão. O CHI e os efeitos não dependem disso, e `valor.json` só reproduz inteiro (até 3e-9) com as
+   duplicatas removidas. A comparação do estimador novo usa o `valor.json` regenerado com as duplicatas removidas.
+2. **Pacotes.** A seção 2 diz que `csdid`, `differences` e `pyfixest` estimam em escala linear. Só verifiquei que o
+   `pyfixest` 0.60 expõe `event_study`, `did2s`, `lpdid` e `SaturatedEventStudy`. Não instalei `csdid` nem `differences`:
+   a afirmação vem da definição aditiva do Callaway & Sant'Anna clássico, e não de um teste meu.
+3. **D3** foi aplicada ao CHI e à duração (o texto não dizia quais desfechos).
+4. **Dependência.** `geopandas` passou a constar no `pyproject.toml`: `pyogrio.read_dataframe` exige, e a instalação do
+   zero falhava no script 01 sem ele.
+5. **p-valor** da tabela de resumo: bootstrap para o CS e assintótico (erro-padrão agrupado) para os demais; a coluna
+   `inferencia` diz qual.
+6. **Reprodutibilidade.** Reexecutar o script 05 dá resultados idênticos para o CS, o event study e a tendência
+   (bit a bit). As linhas do PPML (empilhado, TWFE) variam na casa de 1e-13 entre execuções.

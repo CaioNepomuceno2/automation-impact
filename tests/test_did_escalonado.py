@@ -72,6 +72,8 @@ def test_simulacao_twfe_erra_e_cs_recupera():
 
     st = modelo.did_pilha(modelo.empilhar(p, ev, ctrl), "chi")
     assert st.efeito_pct == pytest.approx(verdade, abs=3.0)
+    print(f"simulação (pytest -s): verdade {verdade:.2f}% | CS {cs['efeito_pct']:.2f}% | "
+          f"TWFE {tw.efeito_pct:.2f}% (IC {lo:.2f} a {hi:.2f}) | empilhado {st.efeito_pct:.2f}%")
 
 
 def test_simulacao_cs_recupera_cada_tempo_relativo():

@@ -25,6 +25,10 @@ ganharam, antes e depois (diferenças em diferenças com efeitos fixos).
 | Custo de **1 ponto percentual** de indisponibilidade da telemetria dos 4.000 religadores | **0,7 a 1,4 min de DEC/ano**; R$ 134 a 268 mil/ano (social) |
 | As 10 subestações mais críticas (10% de 104) | concentram **33% do CHI** |
 
+**Conferência com outro estimador** (seção [Conferência com um estimador robusto à adoção escalonada](#conferência-com-um-estimador-robusto-à-adoção-escalonada)):
+Callaway & Sant'Anna dá −16,8% no CHI (concorda) e −14,5% na duração, 5,5 p.p. menos que os −20%. Descontando a
+tendência anterior da duração, a queda vai a −3% (IC 95%: −17% a +15%). Os números da tabela não foram alterados.
+
 ![event study](reports/figures/01_event_study.png)
 
 **O que isso significa:** o gráfico compara alimentadores que ganharam religadores com alimentadores parecidos
@@ -137,6 +141,84 @@ O placebo não acusa efeito, e o resultado fica mais forte quando se exclui alim
 (divisões e transferências de carga). Ganhos de um único religador não mostram efeito detectável. Eles se
 misturam com acertos de cadastro, e um religador sozinho muda pouco num alimentador grande.
 
+### Conferência com um estimador robusto à adoção escalonada
+
+Os alimentadores recebem religadores em anos diferentes (coortes de 2020 a 2025) e o efeito cresce com o tempo.
+Nessa situação, o TWFE comum pode usar alimentadores já tratados como controle dos que são tratados depois, e
+errar o efeito. O resultado principal já usa o DiD empilhado, que evita isso por desenho. Como segunda checagem,
+`scripts/05_did_escalonado.py` estima o efeito com **Callaway & Sant'Anna**: cada coorte e cada ano são comparados com os
+controles nunca tratados, tomando o ano anterior à instalação como base, na mesma escala em % do PPML. O erro-padrão
+vem de um bootstrap de alimentadores (2.000 réplicas, semente fixa). Implementação própria e testada, sem
+dependência nova: os pacotes que conheço estimam o efeito em níveis, e aqui a pergunta é em %. O protocolo foi
+escrito e commitado antes de rodar nos dados reais: [`docs/preregistro_did_escalonado.md`](docs/preregistro_did_escalonado.md).
+**Nenhum número do cabeçalho mudou.**
+
+![escalonado](reports/figures/07_did_escalonado.png)
+
+| Efeito pós-instalação (média de 0 a +2 anos) | DiD empilhado (resultado acima) | Callaway & Sant'Anna | TWFE binário simples |
+|---|---|---|---|
+| CHI | −16,6% (IC 95%: −24,8% a −7,5%) | **−16,8%** (−24,9% a −9,0%) | −13,0% (−20,2% a −5,1%) |
+| Duração | −20,1% (−27,4% a −12,0%) | **−14,5%** (−22,1% a −6,4%) | −16,6% (−23,7% a −8,9%) |
+| CHI evitado por religador | ≈ 4.578 consumidores-hora/ano | **4.630** (2.478 a 6.863) | |
+
+Por ano desde a instalação (0, +1, +2): no CHI, empilhado −6,9%, −19,0%, −30,0% e Callaway & Sant'Anna −7,9%,
+−14,6%, −26,7%. Na duração, −13,3%, −11,8%, −22,5% contra −12,8%, −8,0%, −22,2%. Todos os números vêm de
+`reports/did_escalonado_*.csv` e `did_escalonado_valor.json`, calculados sobre o mesmo painel do empilhado.
+
+**O que isso significa.**
+
+* **CHI: concorda.** A diferença é de 0,2 p.p., os intervalos se sobrepõem quase por inteiro e em nenhum ano
+  relativo passa de 4,4 p.p. O −16,6% e os ≈ 4.600 consumidores-hora por religador (4.630 pelo novo estimador)
+  não dependem do método. O TWFE binário simples dá −13,0%, menos negativo, mas dentro do limite de 5 p.p. fixado antes.
+* **Duração: a regra de divergência disparou, por pouco.** O novo estimador dá −14,5%, 5,5 p.p. menos que os
+  −20,1% (o limite era 5 p.p.). Nenhum dos dois IC exclui o ponto do outro: não há contradição, mas os −20% estão
+  no alto da faixa plausível.
+* **Efeitos diferentes por coorte.** Cada coorte tem de 10 a 27 alimentadores, e as células individuais são
+  ruidosas. A coorte de 2025, por exemplo, instalou religadores depois de o CHI subir (no ano −2 e no −3 o CHI
+  estava 35% e 54% abaixo do ano −1). Nas coortes de 2022 e 2023, que têm os três anos anteriores, o CHI vinha
+  caindo (ano −3: +14,9%, IC 95%: +0,1% a +31,9%). Essas tendências em sentidos opostos se compensam no conjunto.
+
+**Teste de simulação.** `tests/test_did_escalonado.py` simula coortes cujo efeito cresce com o tempo e é diferente em
+cada uma, com poucos controles. O efeito verdadeiro é −16,05%. O TWFE comum dá −7,81% (IC 95%: −12,79% a −2,54%, que
+não contém a verdade), o Callaway & Sant'Anna dá −16,02% e o DiD empilhado dá −14,41%. Ou seja, o TWFE comum erra
+e o empilhado, o estimador do resultado principal, não. O novo estimador é uma conferência do empilhado, não uma correção.
+Nos dados reais, o TWFE binário simples ficou perto dos outros (−13,0% contra −16,8%).
+
+**Sensibilidade à tendência anterior da duração.** Antes da instalação, a duração dos alimentadores tratados já caía
+mais rápido que a dos controles (ano −3: +13% no novo estimador e +19% no empilhado, em relação ao ano −1). Se
+essa queda continuasse sozinha depois da obra, ela explicaria parte da queda de 20% que atribuímos ao religador.
+Para medir quanto, prolonguei em linha reta a tendência anterior e a descontei do efeito. λ é a fração da tendência que
+continua depois da instalação.
+
+| λ | 0 (sem ajuste) | 0,25 | 0,5 | 0,75 | 1 (a tendência continua inteira) |
+|---|---|---|---|---|---|
+| Efeito na duração (IC 95%) | −14,5% (−22,1% a −6,4%) | −11,8% (−19,6% a −2,8%) | −9,0% (−18,3% a +2,1%) | −6,1% (−17,3% a +8,1%) | **−3,1% (−16,9% a +14,8%)** |
+
+Se toda a tendência continuar, a queda na duração é de −3,1%, sem diferença de zero (IC 95%: −16,9% a +14,8%). Basta
+que cerca de 40% da tendência continue para o IC passar a conter zero, e o ponto chega a zero perto de λ = 1,3. Só nas
+coortes de 2022 e 2023 o efeito ajustado fica em +0,2% (IC 95%: −19,7% a +23,7%). O mesmo ajuste nos coeficientes do
+empilhado leva a média dos três coeficientes pós de −16% para −0,5%.
+
+**Em linguagem simples:** os dados não conseguem separar o efeito do religador de uma tendência de queda da duração que já
+existia. A queda de 20% na duração **não está demonstrada** como efeito do religador, e talvez seja bem menor. Por isso
+o canal da duração, e a faixa de **0,7 a 1,4 min de DEC por p.p.** de indisponibilidade da telemetria, que usa a fração de
+57% do efeito que passa pela duração, **não são robustos a essa tendência**. Esses números ficam como estão no
+cabeçalho, mas devem ser lidos com esta ressalva. A premissa de que o benefício depende da supervisão continua sem prova
+nos dados abertos; o passo 2 do roteiro de adoção (medir com o SCADA) é o que resolve.
+
+**O CHI sob o mesmo ajuste.** No conjunto das coortes a tendência anterior do CHI é ligeiramente de alta, então descontá-la
+aumenta o efeito (−22,2%), mas o IC passa a conter zero (−42,8% a +4,5%), porque o declive tem incerteza. Nas coortes
+de 2022 e 2023, onde o CHI caía antes, o efeito ajustado fica em −7,8% (−28,5% a +15,7%). A conclusão de que "o CHI
+não mostra tendência anterior" vale para o conjunto de todas as coortes, e é menos firme nesse recorte.
+
+**Custo do ponto percentual de indisponibilidade (diagnóstico, sem trocar a faixa publicada).** Os dois estimadores de
+pacote implicam um efeito de −4,2% por religador, se o efeito for log-linear no número de religadores. O TWFE contínuo que
+sustenta a conta publicada dá −2,2% por religador (IC 95%: −3,3% a −1,2%). Essa diferença já existe com o empilhado
+e não vem do novo estimador. A fração do efeito que passa pela duração vale 57% no TWFE, 86% no novo estimador e 17%
+com o ajuste de tendência. Refazendo a conta com esses valores, o custo de 1 p.p. iria de **0,4 a 0,8 min de DEC/ano**
+(com o ajuste) a **2,0 a 4,1 min** (sem o ajuste), contra os 0,7 a 1,4 publicados (`did_escalonado_valor.json`, regra D6).
+A faixa publicada é, portanto, sensível a escolhas que os dados não decidem. Não a alterei.
+
 ## 2. Por onde o efeito passa: duração, e é aí que a telemetria entra
 
 ![canais](reports/figures/02_canais.png)
@@ -218,6 +300,8 @@ compensações**. É a mesma conclusão do projeto irmão, agora com eficácia m
 4. **Canais:** o CHI é decomposto em nº de falhas × consumidores por falha × duração, cada um estimado à parte.
 5. **Valor:** o efeito vira CHI evitado, minutos de DEC e R$ pelo R$/CHI do projeto irmão; o custo da
    indisponibilidade aplica a fração do benefício que depende de comunicação.
+6. **Conferência:** Callaway & Sant'Anna (controles nunca tratados, escala multiplicativa, bootstrap por alimentador)
+   e ajuste linear da tendência anterior, ao lado do empilhado e do TWFE (`scripts/05_did_escalonado.py`).
 
 Fórmulas, premissas e como interpretar cada número: [`docs/metodologia.md`](docs/metodologia.md).
 
@@ -248,8 +332,16 @@ python scripts/01_build_equipamentos.py   # religadores, telecomando e disjuntor
 python scripts/02_estimar.py              # DiD empilhado, event study, robustez, valoração e subestações
 python scripts/03_atendimento.py          # decomposição do tempo de atendimento (ANEEL, 2025)
 python scripts/04_figuras.py
+python scripts/05_did_escalonado.py       # conferência: Callaway & Sant'Anna e sensibilidade à tendência anterior
 pytest
 ```
+
+**Atenção aos arquivos de continuidade da ANEEL.** Os Parquet de indicadores de continuidade e de compensação baixados
+em 06/11/2026 (republicados em 05/11) têm cada linha duplicada: 20,7 milhões de linhas, das quais 10,3 milhões
+distintas. Rodando o `distribution-asset-risk` sem tratar isso, a compensação por CHI dobra (R$ 3,85 em vez de R$ 1,93 por
+CHI regulatório) e o R$/CHI social, o VPL e o custo por p.p. em R$ mudam. CHI, DEC e os efeitos estimados não mudam. Com
+as linhas duplicadas removidas (`select distinct *` no DuckDB) o `reports/valor.json` regenerado coincide com o
+publicado até 3e-9. Detalhes em [`docs/dados.md`](docs/dados.md).
 
 ## Limitações
 
@@ -257,8 +349,12 @@ pytest
   instalar. O desenho com efeitos fixos, controles nunca tratados, tendências pré-tratamento e placebo reduz,
   mas não elimina, a chance de outra obra simultânea (poda, recondutoramento) explicar parte do efeito.
 * **A duração já caía antes nos alimentadores tratados.** No event study da duração, o ano −3 está 19% acima do
-  ano −1. Parte da queda de 20% na duração pode ser tendência anterior. O CHI, que é o resultado principal,
-  não mostra essa tendência.
+  ano −1 (13% no estimador de Callaway & Sant'Anna). Descontando em linha reta essa tendência anterior, a queda de
+  20% na duração vai a −3,1% (IC 95%: −16,9% a +14,8%) e não se distingue de zero; basta que 40% da tendência continue
+  para isso acontecer. O canal da duração, e por isso a faixa de 0,7 a 1,4 min de DEC por p.p., não é robusto a ela.
+  O CHI, que é o resultado principal, não mostra essa tendência no conjunto das coortes, mas nas coortes de 2022 e
+  2023 o CHI também vinha caindo (ano −3: +14,9%; IC 95%: +0,1% a +31,9%) e o efeito ajustado ali fica em −7,8%
+  (IC: −28,5% a +15,7%). Ver a seção de conferência.
 * **Efeito por religador é médio.** O efeito vale para os alimentadores que receberam pacotes (maiores e com
   mais CHI que a média). A carteira por subestação extrapola esse efeito médio.
 * **Fração dependente de comunicação é premissa.** Os dados separam o canal da frequência do canal da
