@@ -44,6 +44,7 @@ O painel tem uma linha por alimentador × ano de resultado *y*, com os equipamen
 | DiD empilhado, event study, robustez | `scripts/02_estimar.py` | `modelo.empilhar`, `did_pilha`, `event_study` | `reports/efeitos_did.csv`, `event_study.csv`, `robustez.csv` |
 | Efeito por unidade (canais) | `scripts/02_estimar.py` | `modelo.efeito` | `reports/efeitos_por_unidade.csv` |
 | Valoração e subestações | `scripts/02_estimar.py` | `valor.*` | `reports/valor.json`, `subestacoes.csv`, `comparacao_premissas.csv` |
+| Conferência com estimador robusto à adoção escalonada | `scripts/05_did_escalonado.py` | `did_escalonado.*` | `reports/did_escalonado_*.csv`, `did_escalonado_valor.json` |
 | Tempo de atendimento | `scripts/03_atendimento.py` | | `reports/atendimento_2025.csv` |
 | Figuras | `scripts/04_figuras.py` | | `reports/figures/` |
 
@@ -129,3 +130,32 @@ propõe medi-la com os dados de disponibilidade do SCADA.
   substituída por um número medido quando houver dados de disponibilidade por equipamento.
 * **Telecomando sem efeito:** a premissa de catálogo (−21%) não tem apoio no cadastro público, cujo flag de
   telecomando é instável. Não é evidência de que a automação não funcione.
+
+## 9. Conferência com um estimador robusto à adoção escalonada
+
+Protocolo fixado antes dos resultados em [`preregistro_did_escalonado.md`](preregistro_did_escalonado.md); código em
+`autoimpact.did_escalonado` e `scripts/05_did_escalonado.py`. Resultados e leitura no README.
+
+**Por que.** O resultado principal vem do DiD empilhado, que já evita comparar tratados tardios com tratados cedo. O
+efeito por religador da conta da indisponibilidade vem do TWFE contínuo, que não tem essa proteção. Um estimador de
+outra família diz se o resultado principal aguenta.
+
+**Estimador (Callaway & Sant'Anna, controles nunca tratados, escala multiplicativa).** Para a coorte *g* e o ano *t*,
+com base em *g−1*:
+`ATT(g,t) = log[(N_g,t / D_g,t) / (N_g,g−1 / D_g,g−1)] − log[(N_C,t / D_C,t) / (N_C,g−1 / D_C,g−1)]`,
+com *N* e *D* somas do numerador e do denominador do desfecho (CHI: *D* = 1; duração: *N* = CHI, *D* = CI). Em um 2×2
+é igual ao coeficiente do PPML com efeitos fixos (teste automático). Agregação: `θ(e)` por tempo relativo (ponderada
+pelo nº de tratados), resumo pós = média de `θ(0)`, `θ(1)`, `θ(2)`. Mesma janela (−3 a +2), mesmos tratados e controles
+do empilhado.
+
+**Inferência.** Bootstrap por alimentador, estratificado por coorte e controles, 2.000 réplicas, semente 20261106,
+com os mesmos sorteios para todos os desfechos.
+
+**Pré-tendência.** Declive `δ = (−2·θ(−3) − θ(−2)) / 5` (mínimos quadrados em *e* = −3, −2, −1, zero em −1);
+efeito ajustado `θ(e) − λ·δ·(e+1)`, com λ de 0 a 1,5. O declive é reestimado em cada réplica. Não é o HonestDiD de
+Rambachan & Roth: é uma extrapolação linear com a incerteza do declive, e o λ em que o IC passa a conter zero responde a
+uma pergunta parecida ("quanto da tendência anterior precisa continuar?").
+
+**Regras de divergência** (limite de 5 p.p., IC cruzado, zero em só um IC; CHI evitado por religador com 20%) e o que vai
+para o README em cada caso estão no pré-registro. Os números do cabeçalho do README não são alterados por esta conferência.
+
