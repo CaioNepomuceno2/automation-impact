@@ -172,10 +172,10 @@ Produzidos por `scripts/05_did_escalonado.py`.
 Registrados depois de rodar, em 06/11/2026. Nenhum muda uma regra de relato.
 
 1. **Linha de base.** O critério da seção 7 foi aplicado ao CHI e à duração (mesmo nº de eventos e de controles,
-   116 e 209; efeitos idênticos até 1e-7; CHI evitado por religador idêntico). Os arquivos de continuidade da ANEEL
-   republicados em 05/11/2026 trazem cada linha duplicada (ver `docs/dados.md`), o que dobra o R$/CHI de compensação do
-   projeto irmão. O CHI e os efeitos não dependem disso, e `valor.json` só reproduz inteiro (até 3e-9) com as
-   duplicatas removidas. A comparação do estimador novo usa o `valor.json` regenerado com as duplicatas removidas.
+   116 e 209; efeitos idênticos até cerca de 3e-7; CHI evitado por religador idêntico). Os arquivos de continuidade
+   da ANEEL com Last-Modified de 05/11/2026 trazem quase todas as linhas repetidas (ver `docs/dados.md`), o que dobra
+   o R$/CHI de compensação do projeto irmão. O CHI e os efeitos não dependem disso, e `valor.json` só reproduz inteiro
+   (até 3e-9) com as duplicatas removidas. A comparação do estimador novo usa o `valor.json` regenerado com as duplicatas removidas.
 2. **Pacotes.** A seção 2 diz que `csdid`, `differences` e `pyfixest` estimam em escala linear. Só verifiquei que o
    `pyfixest` 0.60 expõe `event_study`, `did2s`, `lpdid` e `SaturatedEventStudy`. Não instalei `csdid` nem `differences`:
    a afirmação vem da definição aditiva do Callaway & Sant'Anna clássico, e não de um teste meu.

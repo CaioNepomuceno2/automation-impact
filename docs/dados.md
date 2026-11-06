@@ -58,14 +58,15 @@
 ## Revisão dos dados da ANEEL em 05/11/2026 (linhas duplicadas)
 
 Os Parquet `indicadores-continuidade-coletivos-2020-2029` e `indicadores-continuidade-coletivos-compensacao-2020-2029`
-(Last-Modified de 05/11/2026) baixados em 06/11/2026 têm cada linha repetida: o de compensação tem 20.702.542 linhas,
-das quais 10.344.506 distintas em todas as colunas (a versão anterior tinha exatamente 10.344.506). O
+(Last-Modified de 05/11/2026) baixados em 06/11/2026 têm quase todas as linhas repetidas: o de compensação tem 20.702.542
+linhas, das quais 10.344.506 distintas em todas as colunas (cerca de 13,5 mil linhas aparecem mais de duas vezes). O
 `distribution-asset-risk` soma a compensação por conjunto e ano, então o R$ por CHI regulatório dobra (R$ 3,85 em vez
 de R$ 1,93) e, com ele, o R$/CHI social, o VPL e o custo por p.p. em R$. O CHI, o DEC, os eventos de tratamento e todos
 os efeitos estimados não dependem desses arquivos.
 
 Verificado em 06/11/2026: com `select distinct *` aplicado aos dois arquivos, o pipeline completo (`distribution-asset-risk`
-e scripts 01 a 04) reproduz os `reports/*.csv` e o `reports/valor.json` publicados (diferença relativa máxima de 3e-9, de
-arredondamento do solver). Sem esse passo, só os valores em R$ de `valor.json` mudam (a compensação por CHI vira 2,00x).
+e scripts 01 a 04) reproduz o `reports/valor.json` publicado (diferença relativa máxima de 3e-9) e os `reports/*.csv` (até
+3e-7, arredondamento do solver). Sem esse passo, só os valores em R$ de `valor.json` mudam: a compensação por CHI vira
+2,00x e o R$/CHI social, 1,32x.
 As interrupções (`interrupcoes-energia-eletrica-2018` a `2026`) não foram republicadas e reproduzem exatamente.
 
