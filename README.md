@@ -12,6 +12,8 @@ cadastros anuais da rede da **Energisa Mato Grosso** (BDGD/ANEEL, 2018 a 2025) e
 (ANEEL). O método compara alimentadores que **ganharam religadores** com alimentadores parecidos que não
 ganharam, antes e depois (diferenças em diferenças com efeitos fixos).
 
+> **Energisa MS:** há uma seção própria ([ir para ela](#energisa-ms)). Lá o efeito do religador **não foi medido em MS: é o de MT, "transportado de MT"**. O restante deste README é de MT.
+
 ## Resultados em uma tela
 
 | | |
@@ -371,6 +373,47 @@ publicado até 3e-9. Detalhes em [`docs/dados.md`](docs/dados.md).
 * **Custos e R$/CHI.** O custo do religador (R$ 160 mil) é ilustrativo. O R$/CHI vem das compensações pagas
   (ANEEL) e de um custo da energia não suprida de cenário (R$ 7.000/MWh), ambos do projeto irmão.
 * **2026 é parcial** (jan-jul) e tem 77% de vínculo com alimentadores.
+
+## Energisa MS
+
+> **Efeito do religador em MS: "transportado de MT", NÃO medido em MS.** A regra de decisão pré-registrada
+> ([`docs/decisoes_ems.md`](docs/decisoes_ems.md), commitada antes de qualquer estimação) só publica efeito próprio com **pelo menos 60 eventos
+> tratados e 100 alimentadores controle nunca tratados**, pela mesma definição de MT. MS tem **72 eventos e 87 controles**, então vale o efeito de MT. Todo
+> arquivo de `reports/ems/` traz o campo `origem_efeito = "transportado de MT"`.
+
+O mesmo pipeline roda para a **Energisa Mato Grosso do Sul** (EMS, código ANEEL 404) com `--config configs/ems.yaml` (ou `AUTOIMPACT_CONFIG`), 8 cadastros
+da BDGD (2018 a 2025) e 1,47 milhão de interrupções. Tudo é gravado em `reports/ems/` e `data/ems/`; **os resultados de MT não mudam** (um teste confere que a
+configuração padrão resolve os mesmos caminhos de MT). O que é de MS é a **exposição** (CHI, consumidores, religadores, R$ por consumidor-hora, subestações); o que é de
+MT é o **efeito** e a fração dele que passa pela duração.
+
+| | MS | MT | Origem do número de MS |
+|---|---|---|---|
+| Efeito sobre o CHI de ganhar religadores | −16,6% (IC 95%: −24,8% a −7,5%) | −16,6% | **transportado de MT** |
+| Eventos / controles nunca tratados | 72 / 87 (mínimos: 60 / 100) | 116 / 209 | contagem em MS |
+| CHI evitado por religador | ≈ 3.900 consumidores-hora/ano (IC 95%: 1.800 a 5.800) | ≈ 4.600 | CHI de MS x efeito de MT |
+| R$ por consumidor-hora (compensação; social) | R$ 2,15; R$ 5,56 | R$ 1,93; R$ 5,94 | MS (compensações de MS, sem linhas repetidas) |
+| VPL em 20 anos, religador de R$ 160 mil (ilustrativo): social; só compensações | +R$ 52,5 mil; −R$ 117,1 mil | +R$ 107 mil; −R$ 94 mil | MS x efeito de MT |
+| Custo de 1 p.p. de indisponibilidade da telemetria dos 2.549 religadores | 0,63 a 1,27 min de DEC/ano | 0,7 a 1,4 min | frota de MS x efeito de MT |
+| Subestações: 10% (6 de 63) concentram | 21% do CHI | 33% | MS |
+
+Ressalvas (mais em [`docs/resultados_ems.md`](docs/resultados_ems.md)):
+
+* **Não é medida de MS.** Se o efeito de MS for diferente do de MT, os números acima mudam. O cadastro de MS também mistura instalação e remanejamento de
+  religadores (ganhos brutos de 1.028 contra saldo de +292 em seis transições).
+* **O canal da duração é frágil à pré-tendência**, como em MT: a faixa de 0,63 a 1,27 min por p.p. usa a fração do efeito que passa pela duração (57%, de MT),
+  e lá a queda da duração some (IC contém zero) quando se desconta a tendência anterior. Não a leia como robusta.
+* **O CHI de MS tem mais expurgo** (50% a 58% do CHI das falhas em 2023 a 2025, contra 26% em MT), e março de 2026 não tem nenhum registro de interrupção.
+* As premissas (custo do religador, vida, taxa, energia não suprida) são as de MT, sem recalibrar. As diferenças entre MS e MT são descritivas, sem causa afirmada.
+
+Documentos: [`decisoes_ems.md`](docs/decisoes_ems.md) (diagnóstico dos dados e a regra), [`resultados_ems.md`](docs/resultados_ems.md) e
+[`saidas_ems.md`](docs/saidas_ems.md) (esquema de `reports/ems/valor.json` e dos arquivos de `data/ems/`).
+
+```bash
+export AUTOIMPACT_CONFIG=configs/ems.yaml AUTOIMPACT_BDGD_ZIPS=<pasta com os zips da BDGD de MS, somente leitura>
+python scripts/01_build_equipamentos.py && python scripts/00_diagnostico.py && python scripts/02_estimar.py && python scripts/04_figuras.py
+```
+
+Projeto independente, sem vínculo com a Energisa ou com a ANEEL.
 
 ---
 Autor: **Caio Nepomuceno**. Dados públicos da ANEEL. Projeto independente, sem vínculo com a Energisa ou com a ANEEL.

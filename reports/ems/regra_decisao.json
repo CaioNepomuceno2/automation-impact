@@ -1,0 +1,25 @@
+{
+  "origem_efeito": "transportado de MT",
+  "n_eventos": 72,
+  "n_controles": 87,
+  "min_eventos": 60,
+  "min_controles": 100,
+  "publica_efeito_proprio": false,
+  "motivo": "controles nunca tratados 87 < 100",
+  "coortes": {
+    "2020": 17,
+    "2021": 14,
+    "2022": 8,
+    "2023": 11,
+    "2024": 10,
+    "2025": 12
+  },
+  "efeito_de_mt_lido_de": {
+    "pasta": "reports",
+    "sha256": {
+      "efeitos_did.csv": "21cbcabfb69d54c9706ffd0cd85f26c7b206fe2b19511fcf99709ba5a4eecf51",
+      "efeitos_por_unidade.csv": "e135b2794606ecbb126ea5b3f3aa440dfa779eb8c2fef6ff134b4ef4708f17aa",
+      "valor.json": "fc7d0d0c1e607352aedf10098da4d05bd1e290bf91bad2af5a841b4665a13afd"
+    }
+  }
+}

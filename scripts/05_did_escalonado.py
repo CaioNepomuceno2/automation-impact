@@ -4,8 +4,13 @@ Protocolo e regras de relato: docs/preregistro_did_escalonado.md. Saídas NOVAS 
 existente é sobrescrito): did_escalonado_att_gt.csv, did_escalonado_eventstudy.csv, did_escalonado_resumo.csv,
 did_escalonado_tendencia.csv, did_escalonado_valor.json e figures/07_did_escalonado.png.
 
-Uso: python scripts/05_did_escalonado.py [--valor reports/valor.json] [--reps 2000] [--saida reports]
+Uso: python scripts/05_did_escalonado.py [--config configs/ems.yaml] [--valor reports/valor.json] [--reps 2000]
+     [--saida reports]
 ``--valor``: valor.json da MESMA versão dos dados (o regenerado por 02_estimar.py), usado em D5 e D6.
+Os padrões de ``--valor`` e ``--saida`` vêm da pasta ``paths.reports`` da configuração.
+
+Configuração com ``regra_decisao`` (MS): só roda se a regra pré-registrada liberou o efeito próprio; senão, para com
+uma mensagem (nada é estimado) e todo arquivo de saída leva ``origem_efeito``.
 """
 import argparse
 import hashlib
@@ -20,8 +25,8 @@ import numpy as np
 import pandas as pd
 
 from autoimpact import did_escalonado as de
-from autoimpact import modelo, painel
-from autoimpact.config import ROOT, Config
+from autoimpact import modelo, painel, regra
+from autoimpact.config import carregar_dos_argumentos
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -30,15 +35,15 @@ warnings.filterwarnings("ignore")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
 log = logging.getLogger("did_escalonado")
 
+cfg, resto = carregar_dos_argumentos()
 ap = argparse.ArgumentParser()
-ap.add_argument("--valor", default=str(ROOT / "reports" / "valor.json"))
+ap.add_argument("--valor", default=str(cfg.reports / "valor.json"))
 ap.add_argument("--reps", type=int, default=de.B_PADRAO)
-ap.add_argument("--saida", default=str(ROOT / "reports"))
-args = ap.parse_args()
+ap.add_argument("--saida", default=str(cfg.reports))
+args = ap.parse_args(resto)
 OUT = Path(args.saida)
 OUT.mkdir(parents=True, exist_ok=True)
 (OUT / "figures").mkdir(exist_ok=True)
-cfg = Config.load()
 DES = ["chi", "duracao_h", "n_falhas", "ci_por_falha"]
 LIMITE_PP = 5.0
 
@@ -46,8 +51,11 @@ LIMITE_PP = 5.0
 p = painel.carregar(cfg.gridrisk_interim, cfg.interim, cfg.anos_resultado)
 p["log_km"] = np.log(p.rede_mt_km.clip(lower=0.1))
 p["log_uc"] = np.log(p.n_uc.clip(lower=1))
-ev = painel.eventos_tratamento(p, minimo=2)
-ctrl = painel.nunca_tratados(p)
+ev, ctrl, dec = regra.decisao_do_painel(p, cfg)
+if dec is not None and not dec.publica_efeito_proprio:
+    raise SystemExit(f"regra de decisão ({dec.motivo}): o efeito próprio não é publicado, então o CS não roda. "
+                     f"Origem do efeito: {dec.origem_efeito}")
+ORIGEM = None if dec is None else dec.origem_efeito
 pilha = modelo.empilhar(p, ev, ctrl)
 log.info("painel %d linhas; eventos %d (coortes %s); controles %d", len(p), len(ev),
          ev.ano_evento.value_counts().sort_index().to_dict(), len(ctrl))
@@ -76,7 +84,7 @@ def _st(d):
 
 # ------------------------------------------------------------------ tabelas
 att = pd.concat([res[d].celulas for d in DES], ignore_index=True)
-att.to_csv(OUT / "did_escalonado_att_gt.csv", index=False)
+regra.salvar_csv(att, OUT / "did_escalonado_att_gt.csv", ORIGEM)
 
 linhas_es = []
 for d in DES:
@@ -94,7 +102,7 @@ for d in DES:
         linhas_es.append({"desfecho": d, "estimador": "CS ajustado pela pré-tendência (λ=1)", "rel": tt,
                           **{k: r[k] for k in ["efeito_pct", "lo_pct", "hi_pct", "ep"]}})
 es_all = pd.DataFrame(linhas_es).sort_values(["desfecho", "estimador", "rel"])
-es_all.to_csv(OUT / "did_escalonado_eventstudy.csv", index=False)
+regra.salvar_csv(es_all, OUT / "did_escalonado_eventstudy.csv", ORIGEM)
 
 resumo = []
 for d in DES:
@@ -117,7 +125,7 @@ for d in DES:
                    "lo_pct": r["ic95_lo_pct"], "hi_pct": r["ic95_hi_pct"], "ep": r["ep"], "p_valor": r["p_valor"],
                    "inferencia": "erro-padrão agrupado por alimentador"})
 resumo = pd.DataFrame(resumo)
-resumo.to_csv(OUT / "did_escalonado_resumo.csv", index=False)
+regra.salvar_csv(resumo, OUT / "did_escalonado_resumo.csv", ORIGEM)
 
 tend, equilibrio = [], {}
 for d in ["duracao_h", "chi"]:
@@ -126,7 +134,7 @@ for d in ["duracao_h", "chi"]:
         tend.append(t)
         equilibrio[f"{d}|{t.amostra.iloc[0]}"] = de.lambda_equilibrio(t)
 tend = pd.concat(tend, ignore_index=True)
-tend.to_csv(OUT / "did_escalonado_tendencia.csv", index=False)
+regra.salvar_csv(tend, OUT / "did_escalonado_tendencia.csv", ORIGEM)
 pontual = {d: de.ajuste_tendencia_pontual(st_es[d]) for d in ["duracao_h", "chi"]}
 
 # ------------------------------------------------------------------ regras do pré-registro
@@ -213,6 +221,8 @@ meta = {"semente": de.SEMENTE, "replicas": int(args.reps), "janela": list(de.JAN
         "versoes": {k: version(k) for k in ["numpy", "pandas", "pyfixest", "scipy"]},
         "celulas_descartadas": res["chi"].plano.descartadas.to_dict("records"),
         "celulas_por_tempo_relativo": {int(k): int(v) for k, v in res["chi"].celulas.groupby("e").size().items()}}
+if ORIGEM is not None:
+    meta = {"origem_efeito": ORIGEM, **meta}
 saida = {"meta": meta, "regras": regras, "pre_tendencia": {"equilibrio": equilibrio, "empilhado_pontual": pontual}}
 (OUT / "did_escalonado_valor.json").write_text(json.dumps(saida, indent=2, ensure_ascii=False, default=float))
 for k, v in regras.items():
@@ -247,8 +257,8 @@ axs[2].axhline(0, color="#555", lw=0.8)
 axs[2].set_xlabel("λ: fração da tendência anterior que continua depois da instalação")
 axs[2].set_ylabel("efeito pós-instalação na duração (%)")
 axs[2].set_title("Duração: quanto da tendência anterior sustenta a queda?", loc="left", fontweight="bold", fontsize=10)
-fig.suptitle("Estimador robusto à adoção escalonada ao lado do resultado principal (IC 95%)", x=0.01, ha="left",
-             fontweight="bold")
+fig.suptitle("Estimador robusto à adoção escalonada ao lado do resultado principal (IC 95%)"
+             + ("" if ORIGEM is None else f" - efeito {ORIGEM}"), x=0.01, ha="left", fontweight="bold")
 fig.tight_layout()
 fig.savefig(OUT / "figures" / "07_did_escalonado.png", bbox_inches="tight")
 plt.close(fig)
