@@ -1,0 +1,33 @@
+{
+  "descricao": "Mesmas funções (painel.eventos_tratamento minimo=2 e painel.nunca_tratados) aplicadas ao painel de MT (Energisa Mato Grosso) regenerado em 06/11/2026 a partir dos mesmos dados abertos. Só contagem: nenhum efeito foi reestimado e nenhum resultado publicado de MT foi tocado. n_eventos confere com as 116 linhas de reports/eventos_tratamento.csv.",
+  "n_eventos": 116,
+  "n_controles": 209,
+  "coortes": {
+    "2020": 18,
+    "2021": 10,
+    "2022": 18,
+    "2023": 27,
+    "2024": 21,
+    "2025": 22
+  },
+  "funil_dos_controles": {
+    "alimentadores distintos no painel (qualquer ano)": 706,
+    "presentes nos 7 anos de resultado": 548,
+    "e com amplitude de religadores <= 1 (= controles nunca tratados, definição de MT)": 209,
+    "dos quais sem nenhum religador em nenhum ano": 5,
+    "dos quais com religador em algum ano": 204,
+    "dos quais circuito vazio (sem rede MT e sem consumidor) em todos os anos": 0,
+    "dos quais com CHI de falhas total igual a zero": 10,
+    "presentes nos 7 anos, mas com amplitude >= 2": 339,
+    "dos quais são eventos (ganho >= 2 que persiste)": 96,
+    "não presentes nos 7 anos de resultado": 158
+  },
+  "somente_informativo_fora_da_regra": {
+    "eventos_ganho_ge1": 151,
+    "eventos_ganho_ge3": 87,
+    "controles_amplitude_0": 67,
+    "controles_amplitude_le2": 309,
+    "controles_sem_circuito_vazio": 209,
+    "controles_com_chi_positivo": 199
+  }
+}

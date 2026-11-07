@@ -1,0 +1,11 @@
+etapa,alimentadores,origem_efeito
+alimentadores distintos no painel (qualquer ano),482,transportado de MT
+presentes nos 7 anos de resultado,299,transportado de MT
+"  e com amplitude de religadores <= 1 (= controles nunca tratados, definição de MT)",87,transportado de MT
+     dos quais sem nenhum religador em nenhum ano,3,transportado de MT
+     dos quais com religador em algum ano,84,transportado de MT
+     dos quais circuito vazio (sem rede MT e sem consumidor) em todos os anos,0,transportado de MT
+     dos quais com CHI de falhas total igual a zero,3,transportado de MT
+"  presentes nos 7 anos, mas com amplitude >= 2",212,transportado de MT
+     dos quais são eventos (ganho >= 2 que persiste),61,transportado de MT
+não presentes nos 7 anos de resultado,183,transportado de MT

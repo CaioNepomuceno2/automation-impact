@@ -65,6 +65,20 @@ def decisao_do_painel(p: pd.DataFrame, cfg: Config) -> tuple[pd.DataFrame, pd.In
     return ev, ctrl, (None if cfg.regra is None else decidir(len(ev), len(ctrl), cfg.regra))
 
 
+def origem_do_recorte(cfg: Config) -> str | None:
+    """Rótulo de origem do efeito já decidido (``None`` sem regra, como em MT).
+
+    Lê ``regra_decisao.json`` (gravado por ``02_estimar.py``) ou, na falta dele, a contagem do diagnóstico
+    (``diagnostico/regra_contagens.json``). Sem nenhum dos dois, falha: o rótulo não pode ser chutado.
+    """
+    if cfg.regra is None:
+        return None
+    for nome in ("regra_decisao.json", "diagnostico/regra_contagens.json"):
+        if (cfg.reports / nome).exists():
+            return json.loads((cfg.reports / nome).read_text(encoding="utf-8"))["origem_efeito"]
+    raise SystemExit(f"sem decisão da regra em {cfg.reports}: rode scripts/00_diagnostico.py ou scripts/02_estimar.py antes")
+
+
 def rotular(df: pd.DataFrame, origem: str | None) -> pd.DataFrame:
     """Acrescenta a coluna ``origem_efeito`` (sem rótulo, devolve a tabela como está)."""
     return df if origem is None else df.assign(origem_efeito=origem)
@@ -86,3 +100,11 @@ def carregar_efeito_mt(fonte: Path) -> tuple[pd.DataFrame, pd.DataFrame, dict]:
     if faltam:
         raise ValueError(f"resultados de MT incompletos em {fonte}: faltam {faltam}")
     return did, por_unidade, valor
+
+
+def comparar_com_mt(did: pd.DataFrame, did_mt: pd.DataFrame, sigla: str) -> pd.DataFrame:
+    """Efeito do recorte (``did``) e o de MT (``did_mt``) lado a lado, por desfecho, com IC 95% e nº de alimentadores."""
+    cols = ["efeito_pct", "ic95_lo_pct", "ic95_hi_pct", "n_alimentadores"]
+    a = did[["desfecho", *cols]].rename(columns={c: f"{c}_{sigla.lower()}" for c in cols})
+    b = did_mt[["desfecho", *cols]].rename(columns={c: f"{c}_mt" for c in cols})
+    return a.merge(b, on="desfecho", how="left")
