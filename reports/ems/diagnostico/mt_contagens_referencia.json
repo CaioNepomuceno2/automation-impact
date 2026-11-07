@@ -1,0 +1,157 @@
+{
+  "origem_efeito": "transportado de MT",
+  "descricao": "Mesmas funções (painel.eventos_tratamento minimo=2 e painel.nunca_tratados) aplicadas ao painel de EMT (Energisa Mato Grosso), lido em modo somente leitura dos arquivos da configuração de MT. Só contagem: nenhum efeito foi reestimado e nenhum resultado publicado foi tocado. Os números deste arquivo são de MT, não de MS; o campo origem_efeito é o rótulo do recorte de MS que o contém.",
+  "sigla_referencia": "EMT",
+  "n_eventos": 116,
+  "n_controles": 209,
+  "coortes": {
+    "2020": 18,
+    "2021": 10,
+    "2022": 18,
+    "2023": 27,
+    "2024": 21,
+    "2025": 22
+  },
+  "funil_dos_controles": {
+    "alimentadores distintos no painel (qualquer ano)": 706,
+    "presentes nos 7 anos de resultado": 548,
+    "e com amplitude de religadores <= 1 (= controles nunca tratados, definição de MT)": 209,
+    "dos quais sem nenhum religador em nenhum ano": 5,
+    "dos quais com religador em algum ano": 204,
+    "dos quais circuito vazio (sem rede MT e sem consumidor) em todos os anos": 0,
+    "dos quais com CHI de falhas total igual a zero": 10,
+    "presentes nos 7 anos, mas com amplitude >= 2": 339,
+    "dos quais são eventos (ganho >= 2 que persiste)": 96,
+    "não presentes nos 7 anos de resultado": 158
+  },
+  "somente_informativo_fora_da_regra": {
+    "eventos_ganho_ge1": 151,
+    "eventos_ganho_ge3": 87,
+    "controles_amplitude_0": 67,
+    "controles_amplitude_le2": 309,
+    "controles_sem_circuito_vazio": 209,
+    "controles_com_chi_positivo": 199
+  },
+  "religadores_por_snapshot": [
+    {
+      "ano_snapshot": 2018,
+      "circuitos_equipamentos": 588,
+      "religadores": 2387,
+      "religadores_telecomandados": 1211,
+      "rede_mt_km": 173531.37831600002,
+      "religadores_por_100km": 1.3755437334527947
+    },
+    {
+      "ano_snapshot": 2019,
+      "circuitos_equipamentos": 588,
+      "religadores": 2538,
+      "religadores_telecomandados": 1136,
+      "rede_mt_km": 184841.770861,
+      "religadores_por_100km": 1.373066265367346
+    },
+    {
+      "ano_snapshot": 2020,
+      "circuitos_equipamentos": 591,
+      "religadores": 2530,
+      "religadores_telecomandados": 1093,
+      "rede_mt_km": 189174.59523700003,
+      "religadores_por_100km": 1.3373888797438092
+    },
+    {
+      "ano_snapshot": 2021,
+      "circuitos_equipamentos": 587,
+      "religadores": 2600,
+      "religadores_telecomandados": 1123,
+      "rede_mt_km": 193830.75442200003,
+      "religadores_por_100km": 1.3413764021881642
+    },
+    {
+      "ano_snapshot": 2022,
+      "circuitos_equipamentos": 637,
+      "religadores": 3099,
+      "religadores_telecomandados": 1142,
+      "rede_mt_km": 198128.971037,
+      "religadores_por_100km": 1.564132687804284
+    },
+    {
+      "ano_snapshot": 2023,
+      "circuitos_equipamentos": 647,
+      "religadores": 3388,
+      "religadores_telecomandados": 811,
+      "rede_mt_km": 200207.96221899998,
+      "religadores_por_100km": 1.6922403896674167
+    },
+    {
+      "ano_snapshot": 2024,
+      "circuitos_equipamentos": 673,
+      "religadores": 3647,
+      "religadores_telecomandados": 796,
+      "rede_mt_km": 204944.62251,
+      "religadores_por_100km": 1.779505095246912
+    },
+    {
+      "ano_snapshot": 2025,
+      "circuitos_equipamentos": 697,
+      "religadores": 4000,
+      "religadores_telecomandados": 812,
+      "rede_mt_km": 208967.365887,
+      "religadores_por_100km": 1.9141744851026248
+    }
+  ],
+  "transicoes_religadores": [
+    {
+      "ano_resultado": 2020,
+      "religadores_ganhos": 400.0,
+      "religadores_perdidos": 236.0,
+      "ganho_liquido": 164.0,
+      "circuitos_ganho_ge2": 63,
+      "circuitos_perda_ge2": 41,
+      "eventos_da_coorte": 18
+    },
+    {
+      "ano_resultado": 2021,
+      "religadores_ganhos": 270.0,
+      "religadores_perdidos": 297.0,
+      "ganho_liquido": -27.0,
+      "circuitos_ganho_ge2": 42,
+      "circuitos_perda_ge2": 51,
+      "eventos_da_coorte": 10
+    },
+    {
+      "ano_resultado": 2022,
+      "religadores_ganhos": 333.0,
+      "religadores_perdidos": 245.0,
+      "ganho_liquido": 88.0,
+      "circuitos_ganho_ge2": 62,
+      "circuitos_perda_ge2": 53,
+      "eventos_da_coorte": 18
+    },
+    {
+      "ano_resultado": 2023,
+      "religadores_ganhos": 497.0,
+      "religadores_perdidos": 153.0,
+      "ganho_liquido": 344.0,
+      "circuitos_ganho_ge2": 116,
+      "circuitos_perda_ge2": 27,
+      "eventos_da_coorte": 27
+    },
+    {
+      "ano_resultado": 2024,
+      "religadores_ganhos": 484.0,
+      "religadores_perdidos": 220.0,
+      "ganho_liquido": 264.0,
+      "circuitos_ganho_ge2": 90,
+      "circuitos_perda_ge2": 33,
+      "eventos_da_coorte": 21
+    },
+    {
+      "ano_resultado": 2025,
+      "religadores_ganhos": 438.0,
+      "religadores_perdidos": 267.0,
+      "ganho_liquido": 171.0,
+      "circuitos_ganho_ge2": 85,
+      "circuitos_perda_ge2": 35,
+      "eventos_da_coorte": 22
+    }
+  ]
+}

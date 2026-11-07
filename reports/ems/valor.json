@@ -1,0 +1,74 @@
+{
+  "origem_efeito": "transportado de MT",
+  "eventos": 72,
+  "religadores_adicionados_nos_eventos": 193.0,
+  "ganho_mediano_por_evento": 2.0,
+  "efeito_chi_pct": -16.581138949733653,
+  "ic95_chi_pct": [
+    -24.772934126119907,
+    -7.497304353328415
+  ],
+  "chi_evitado_ano_eventos": 751348.7466150299,
+  "chi_evitado_ano_ic95": [
+    339728.7873855735,
+    1122547.3148776605
+  ],
+  "chi_evitado_ano_por_religador": 3892.998687124507,
+  "chi_evitado_ano_por_religador_ic95": [
+    1760.2527843812097,
+    5816.307330972334
+  ],
+  "uc_total": 1458167.0,
+  "dec_min_por_religador": 0.1601873593542238,
+  "rs_por_chi_compensacao": 2.1484142591061692,
+  "rs_por_chi_social": 5.560398206101415,
+  "frac_chi_regulatorio": 0.5230126048614224,
+  "rs_ano_por_religador_compensacao": 4374.3591687330945,
+  "rs_ano_por_religador_social": 21646.62291624227,
+  "vpl_religador_compensacao": -117051.89686825112,
+  "vpl_religador_social": 52529.73466513652,
+  "payback_anos_social": 7.391453189677269,
+  "twfe_efeito_por_religador_pct": {
+    "chi": -2.232135413319569,
+    "n_falhas": -1.165150641643542,
+    "ci_por_falha": 0.7202491482675155,
+    "duracao_h": -1.2809985998084694
+  },
+  "frac_efeito_via_duracao_twfe": 0.5711261149102176,
+  "religadores_2025": 2549.0,
+  "frota_chi_ano_dependente_dos_religadores": 5385185.916375234,
+  "frota_chi_marginal_medio_por_religador": 2112.6661107788286,
+  "indisponibilidade_1pp": {
+    "canal_duracao_inteiro": {
+      "fracao_dependente_de_comunicacao": 0.5711261149102176,
+      "chi_ano_por_pp": 30756.203104886074,
+      "dec_min_por_pp": 1.2655424147530183,
+      "rs_ano_por_pp_social": 151070.6316833449,
+      "rs_ano_por_pp_compensacao": 31375.144181828415
+    },
+    "metade_do_canal_duracao": {
+      "fracao_dependente_de_comunicacao": 0.2855630574551088,
+      "chi_ano_por_pp": 15378.101552443037,
+      "dec_min_por_pp": 0.6327712073765092,
+      "rs_ano_por_pp_social": 75535.31584167245,
+      "rs_ano_por_pp_compensacao": 15687.572090914207
+    }
+  },
+  "premissas": {
+    "custo_religador_rs": 160000,
+    "vida_anos": 20,
+    "taxa_desconto": 0.08,
+    "custo_ens_rs_mwh": 7000
+  },
+  "carteira_subestacoes": {
+    "alimentadores_candidatos": 116,
+    "religadores_por_alimentador": 2.0,
+    "investimento_rs": 37120000.0,
+    "chi_evitado_ano": 1587047.2608946348,
+    "dec_min_evitado_ano": 65.30310701975705,
+    "rs_ano_social": 8644343.9059336,
+    "vpl_social": 47751442.709142074,
+    "densidade_mediana_religadores_100km": 2.339583134832756,
+    "criterio": "rede_mt_km >= 30 e densidade de religadores abaixo da mediana"
+  }
+}

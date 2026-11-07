@@ -1,0 +1,60 @@
+# Recorte: Energisa Mato Grosso do Sul (EMS, código ANEEL 404)
+# Uso: python scripts/<script>.py --config configs/ems.yaml   (ou AUTOIMPACT_CONFIG=configs/ems.yaml)
+# Tudo que é de MS é gravado em subpastas "ems"; nada aqui toca os caminhos de MT.
+distribuidora:
+  sigla: EMS
+  nome: Energisa Mato Grosso do Sul
+
+paths:
+  raw: data/ems/raw
+  interim: data/ems/interim
+  processed: data/ems/processed
+  reports: reports/ems
+  # Saídas do pipeline de MS do distribution-asset-risk (interrupções harmonizadas, crosswalk e atributos BDGD).
+  # Rode aquele projeto primeiro ou aponte para uma cópia dos arquivos.
+  gridrisk_interim: ../distribution-asset-risk/data/ems/interim
+  gridrisk_processed: ../distribution-asset-risk/data/ems/processed
+  # Pasta com os zips da BDGD (bdgd_<ano>_<item>.gdb.zip), lidos sem nunca modificar; sem ela, baixa do ArcGIS Hub.
+  # Também vale a variável AUTOIMPACT_BDGD_ZIPS.
+  bdgd_zips: null
+
+bdgd:
+  # snapshots de 31/12 de cada ano, a versão mais recente de cada um (id do item no ArcGIS Hub da ANEEL).
+  # Ficam de fora o item avulso EMS_404_2022-10-31 (c3585ae5...) e o snapshot de 2023 de 17/12/2024 (b8c585ae...).
+  snapshots:
+    2018: 5382c59d7cc7494a9a1f8cd865187457
+    2019: b83ad867a35b43189f41b68988f7f0b6
+    2020: fe56dce0714f4b6795d3b23130f5898a
+    2021: 933af69c57dd41ea8f6048118b8d07e7
+    2022: ff5242147c86428e88971941a35c7cd1
+    2023: 975f18dfdb0c479cb237893c5b296ca9
+    2024: b7fad4cd388845a08a01643599ec747b
+    2025: 9a1ce360865f4358b31e9fb2d016aac9
+
+# ano de resultado y usa o cadastro de 31/12 de y-1 (mesmas janelas de MT)
+anos_resultado: [2019, 2020, 2021, 2022, 2023, 2024, 2025]
+
+# Ocorrências emergenciais (ANEEL, Brasil inteiro): a EMS não tem vizinha de nome parecido, então não há "excluir".
+ocorrencias:
+  incluir: "%ENERGISA MATO GROSSO DO SUL%"
+  excluir: null
+  ano: 2025
+
+# Regra de decisão pré-registrada (docs/decisoes_ems.md, escrita e commitada antes de qualquer estimação de MS).
+# Com a MESMA definição de evento e de controle de MT, o efeito próprio de MS só é publicado com pelo menos
+# min_eventos alimentadores tratados E min_controles alimentadores nunca tratados. Se não houver, vale o efeito de MT,
+# rotulado como "transportado de MT" em todos os arquivos de saída. fonte_mt: resultados publicados de MT (só leitura).
+regra_decisao:
+  min_eventos: 60
+  min_controles: 100
+  origem_medido: "medido em MS"
+  origem_transportado: "transportado de MT"
+  fonte_mt: reports
+
+premissas:
+  # As mesmas de MT, sem recalibrar (docs/decisoes_ems.md). O R$ por consumidor-hora de MS vem do
+  # distribution-asset-risk (compensações pagas a MS, ANEEL, sem linhas repetidas; custo da energia não suprida de cenário).
+  custo_ens_rs_mwh: 7000
+  taxa_desconto: 0.08
+  vida_religador_anos: 20
+  custo_religador_rs: 160000

@@ -7,6 +7,8 @@ paths:
   raw: data/raw
   interim: data/interim
   processed: data/processed
+  # onde os scripts gravam csv, json e figuras
+  reports: reports
   # Saídas do pipeline do distribution-asset-risk (interrupções harmonizadas, crosswalk e atributos BDGD).
   # Rode aquele projeto primeiro ou aponte para uma cópia dos arquivos.
   gridrisk_interim: ../distribution-asset-risk/data/interim
@@ -23,6 +25,13 @@ bdgd:
     2023: f6095aa7e5c64119ab46e3efe46b77d5
     2024: 8fed7443387d4d04a361e7f4d1edea64
     2025: 02a120db1b5149709f8d371c21635adc
+
+# Ocorrências emergenciais (ANEEL, Brasil inteiro): filtro do agente em NomAgente (ilike); "excluir" tira
+# a vizinha de nome parecido ("... MATO GROSSO DO SUL").
+ocorrencias:
+  incluir: "%ENERGISA MATO GROSSO%"
+  excluir: "%SUL%"
+  ano: 2025
 
 # ano de resultado y usa o cadastro de 31/12 de y-1
 anos_resultado: [2019, 2020, 2021, 2022, 2023, 2024, 2025]

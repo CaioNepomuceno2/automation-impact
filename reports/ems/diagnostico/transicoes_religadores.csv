@@ -1,0 +1,7 @@
+ano_resultado,snapshot_de,snapshot_ate,circuitos_nos_dois,religadores_ganhos,religadores_perdidos,ganho_liquido,circuitos_ganho_ge1,circuitos_ganho_ge2,circuitos_ganho_ge3,circuitos_perda_ge2,circuitos_estaveis_amplitude_le1,eventos_da_coorte,origem_efeito
+2020,2018,2019,311,191.0,113.0,78.0,100,38,15,20,253,17,transportado de MT
+2021,2019,2020,315,240.0,199.0,41.0,108,45,19,41,229,14,transportado de MT
+2022,2020,2021,314,201.0,75.0,126.0,99,45,21,11,258,8,transportado de MT
+2023,2021,2022,318,153.0,243.0,-90.0,69,34,15,44,240,11,transportado de MT
+2024,2022,2023,344,130.0,50.0,80.0,57,28,11,7,309,10,transportado de MT
+2025,2023,2024,351,113.0,56.0,57.0,63,21,10,8,322,12,transportado de MT

@@ -1,0 +1,3 @@
+interna_np,ocorrencias,preparo_mediana_min,deslocamento_mediana_min,execucao_mediana_min,frac_preparo,frac_deslocamento,frac_execucao,origem_efeito
+True,240039,198.0,26.0,18.0,0.8205252492970008,0.08476532568538443,0.09470942501761477,transportado de MT
+False,5118,269.0,36.0,33.0,0.787180033189902,0.07541646473695289,0.13740350207314506,transportado de MT

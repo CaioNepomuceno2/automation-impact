@@ -1,0 +1,44 @@
+{
+  "origem_efeito": "transportado de MT",
+  "n_eventos": 72,
+  "n_controles": 87,
+  "min_eventos": 60,
+  "min_controles": 100,
+  "publica_efeito_proprio": false,
+  "motivo": "controles nunca tratados 87 < 100",
+  "definicao": {
+    "evento": "painel.eventos_tratamento(p, minimo=2): primeiro ano de resultado em que o alimentador ganha 2 ou mais religadores de uma vez em relação ao snapshot anterior e mantém o ganho até o fim",
+    "controle": "painel.nunca_tratados(p): presente nos 7 anos de resultado e com amplitude de religadores <= 1"
+  },
+  "coortes": {
+    "2020": 17,
+    "2021": 14,
+    "2022": 8,
+    "2023": 11,
+    "2024": 10,
+    "2025": 12
+  },
+  "somente_informativo_fora_da_regra": {
+    "eventos_ganho_ge1": 119,
+    "eventos_ganho_ge3": 34,
+    "controles_amplitude_0": 25,
+    "controles_amplitude_le2": 151,
+    "controles_sem_circuito_vazio": 87,
+    "controles_com_chi_positivo": 84
+  },
+  "cobertura_ano_parcial": {
+    "ano": 2026,
+    "meses_com_registro": [
+      1,
+      2,
+      4,
+      5,
+      6,
+      7
+    ],
+    "rotulo": "jan-fev, abr-jul/2026 (sem mar)",
+    "falhas": 103373,
+    "frac_falhas_com_circuito": 0.8576320702697997,
+    "frac_chi_com_circuito": 0.8405952975177495
+  }
+}
