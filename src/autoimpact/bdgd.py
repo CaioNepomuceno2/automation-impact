@@ -34,12 +34,28 @@ TIPOS = {
 }
 
 
-def download(item: str, dest: Path, retries: int = 4) -> Path:
-    """Baixa e descompacta um snapshot; devolve o caminho do .gdb."""
+def zip_do_cache(zips: Path, item: str) -> Path:
+    """Zip ``bdgd_<ano>_<item>.gdb.zip`` de uma pasta de cache (somente leitura: nunca é movido nem apagado)."""
+    achados = sorted(zips.glob(f"bdgd_*_{item}.gdb.zip"))
+    if len(achados) != 1:
+        raise FileNotFoundError(f"esperava 1 zip do item {item} em {zips}, achei {len(achados)}")
+    return achados[0]
+
+
+def download(item: str, dest: Path, retries: int = 4, zips: Path | None = None) -> Path:
+    """Baixa e descompacta um snapshot; devolve o caminho do .gdb.
+
+    Com ``zips`` (pasta de cache), extrai o zip de lá para ``dest`` e não baixa nada: se o item não estiver no
+    cache, falha em vez de ir à rede.
+    """
     dest.mkdir(parents=True, exist_ok=True)
     existing = [p for p in dest.rglob("*.gdb") if p.is_dir()]
     if existing:
         return existing[0]
+    if zips is not None:
+        with zipfile.ZipFile(zip_do_cache(zips, item)) as z:
+            z.extractall(dest)
+        return next(p for p in dest.rglob("*.gdb") if p.is_dir())
     zpath = dest / f"{item}.gdb.zip"
     for attempt in range(retries):
         try:
@@ -123,9 +139,12 @@ def subestacoes(gdb: Path) -> pd.DataFrame:
     return sub
 
 
-def build_snapshot(item: str, ano: int, raw: Path, interim: Path, keep_gdb: bool = False) -> Path:
+def build_snapshot(item: str, ano: int, raw: Path, interim: Path, keep_gdb: bool = False,
+                   gdb: Path | None = None, zips: Path | None = None) -> Path:
+    """Equipamentos e subestações de um snapshot. ``gdb``: .gdb já extraído (não é apagado); ``zips``: cache de zips."""
     dest = raw / "bdgd" / str(ano)
-    gdb = download(item, dest)
+    externo = gdb is not None
+    gdb = gdb if externo else download(item, dest, zips=zips)
     sw = _read(gdb, "UNSEMT", ["CTMT", "TIP_UNID", "TLCD"])
     ct = _read(gdb, "CTMT", ["COD_ID", "NOME", "SUB"])
     eq = equipamentos_por_alimentador(sw, ct).assign(ano_snapshot=ano)
@@ -135,6 +154,6 @@ def build_snapshot(item: str, ano: int, raw: Path, interim: Path, keep_gdb: bool
     subestacoes(gdb).assign(ano_snapshot=ano).to_parquet(interim / f"subestacoes_{ano}.parquet", index=False)
     log.info("BDGD %s: %d alimentadores, %d religadores (%d telecomandados)", ano, len(eq),
              eq.n_religadores.sum(), eq.n_religadores_tlcd.sum())
-    if not keep_gdb:
+    if not keep_gdb and not externo:
         shutil.rmtree(dest, ignore_errors=True)
     return out
