@@ -398,7 +398,7 @@ MT é o **efeito** e a fração dele que passa pela duração.
 
 Ressalvas (mais em [`docs/resultados_ems.md`](docs/resultados_ems.md)):
 
-* **Não é medida de MS.** Se o efeito de MS for diferente do de MT, os números acima mudam. O cadastro de MS também mistura instalação e remanejamento de
+* **Não é medida de MS.** Se o efeito de MS for diferente do de MT, os números acima mudam. O cadastro de MS também pode misturar instalação e remanejamento de
   religadores (ganhos brutos de 1.028 contra saldo de +292 em seis transições).
 * **O canal da duração é frágil à pré-tendência**, como em MT: a faixa de 0,63 a 1,27 min por p.p. usa a fração do efeito que passa pela duração (57%, de MT),
   e lá a queda da duração some (IC contém zero) quando se desconta a tendência anterior. Não a leia como robusta.

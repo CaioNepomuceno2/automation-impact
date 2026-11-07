@@ -31,14 +31,14 @@ comparação, o que o repositório publica para a Energisa MT.
 | Carteira ilustrativa: +2 religadores em alimentadores longos e pouco protegidos | 116 alimentadores; R$ 37,1 mi; 65 min de DEC/ano; VPL social +R$ 47,8 mi | 199; R$ 63,7 mi; 78 min; +R$ 99,6 mi | MS x efeito de MT (extrapolação ilustrativa) |
 
 * O R$ por consumidor-hora de MS **não é** o de MT: vem de `risco_alimentador` da base, que lê as compensações de MS com o leitor que remove as
-  linhas repetidas (cada linha da EMS vem duas vezes no arquivo da ANEEL). É a mediana, ponderada pelo CHI dos eventos.
+  linhas repetidas (cada linha da EMS vem duas vezes no arquivo da ANEEL). É a média, ponderada pelo CHI dos eventos, do R$ por consumidor-hora de cada alimentador (a mediana por alimentador, na base, é de R$ 1,87 e R$ 4,75).
 * A parcela regulatória do CHI dos 72 eventos de MS é de 52% (MT: 76%). É isso que torna o valor "só compensações" menor em MS.
 * As diferenças entre as colunas MS e MT são **descritivas**; não afirmo causa para elas.
 
 ## 2. O que este resultado não diz
 
 * **Não é uma medida de MS.** O −16,6% foi estimado em MT. Em MS, os dados de religadores permitem 72 eventos, mas só 87 controles que nunca
-  mudaram de nível (o mínimo era 100), e o cadastro mistura instalação e remanejamento (ganhos brutos de 1.028 religadores contra saldo de +292; ver
+  mudaram de nível (o mínimo era 100), e o cadastro pode misturar instalação e remanejamento (ganhos brutos de 1.028 religadores contra saldo de +292; ver
   `decisoes_ems.md`, seção 2). Se o efeito de MS for parecido com o de MT, os números acima valem; se não for, não.
 * **O CHI de MS é diferente.** O CHI expurgado pesa mais em MS (a base mede 50% a 58% do CHI das falhas em 2023 a 2025, contra 26% em MT), e o
   efeito de MT foi medido sobre o CHI total.

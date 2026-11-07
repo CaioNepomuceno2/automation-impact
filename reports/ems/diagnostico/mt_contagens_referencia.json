@@ -1,5 +1,7 @@
 {
-  "descricao": "Mesmas funções (painel.eventos_tratamento minimo=2 e painel.nunca_tratados) aplicadas ao painel de MT (Energisa Mato Grosso) regenerado em 06/11/2026 a partir dos mesmos dados abertos. Só contagem: nenhum efeito foi reestimado e nenhum resultado publicado de MT foi tocado. n_eventos confere com as 116 linhas de reports/eventos_tratamento.csv.",
+  "origem_efeito": "transportado de MT",
+  "descricao": "Mesmas funções (painel.eventos_tratamento minimo=2 e painel.nunca_tratados) aplicadas ao painel de EMT (Energisa Mato Grosso), lido em modo somente leitura dos arquivos da configuração de MT. Só contagem: nenhum efeito foi reestimado e nenhum resultado publicado foi tocado. Os números deste arquivo são de MT, não de MS; o campo origem_efeito é o rótulo do recorte de MS que o contém.",
+  "sigla_referencia": "EMT",
   "n_eventos": 116,
   "n_controles": 209,
   "coortes": {

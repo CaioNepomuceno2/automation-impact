@@ -16,7 +16,7 @@ Energisa Mato Grosso do Sul (EMS). "Média tensão" aparece por extenso. As deci
 
 | # | Tema | O que os dados de MS mostram | Decisão |
 |---|---|---|---|
-| 1 | Instalações de religadores | 1.730 religadores (2018) a 2.187 (2024) nos snapshots usados no painel; os ganhos brutos por circuito (1.028) são bem maiores que o saldo (+292 nos circuitos presentes nos dois anos), então o cadastro mistura instalação e remanejamento | A definição de evento de MT é mantida; a ressalva fica registrada (seção 2) |
+| 1 | Instalações de religadores | 1.730 religadores (2018) a 2.187 (2024) nos snapshots usados no painel; os ganhos brutos por circuito (1.028) são bem maiores que o saldo (+292 nos circuitos presentes nos dois anos), então o cadastro pode misturar instalação e remanejamento | A definição de evento de MT é mantida; a ressalva fica registrada (seção 2) |
 | 2 | Eventos e controles | **72 eventos** tratados e **87 controles** nunca tratados (MT: 116 e 209) | Regra pré-registrada (seção 4) |
 | 3 | Regra de decisão | 72 >= 60, mas 87 < 100 | **Não se publica efeito próprio de MS.** Vale o efeito de MT, rotulado **"transportado de MT"** (seção 5) |
 | 4 | Cobertura e vínculo de 2026 | Sem nenhum registro em março; 85,8% das falhas (84,1% do CHI) casam com um circuito | 2026 só entra na tabela descritiva de quem abriu o circuito (seção 3) |
@@ -239,4 +239,6 @@ export AUTOIMPACT_CONFIG=configs/ems.yaml                  # ou --config em cada
 export AUTOIMPACT_BDGD_ZIPS=<pasta com os zips bdgd_<ano>_<item>.gdb.zip>   # somente leitura
 python scripts/01_build_equipamentos.py                    # data/ems/interim/equipamentos_<ano>.parquet
 python scripts/00_diagnostico.py                           # reports/ems/diagnostico/ (contagens, sem estimar nada)
+# opcional: recontar MT com as mesmas funções (só leitura; os dados de MT têm que estar nos caminhos de configs/emt.yaml)
+python scripts/00_diagnostico.py --referencia-mt configs/emt.yaml   # grava mt_contagens_referencia.json
 ```

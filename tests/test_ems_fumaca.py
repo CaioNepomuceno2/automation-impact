@@ -140,12 +140,21 @@ def _todos_os_csv_tem_origem(pasta: Path, origem: str):
         assert set(pd.read_csv(a).origem_efeito) == {origem}, a.name
 
 
+def _todos_os_json_tem_origem(pasta: Path, origem: str):
+    """Todo JSON de saída traz ``origem_efeito`` (no topo ou em ``meta``)."""
+    arquivos = sorted(pasta.rglob("*.json"))
+    assert arquivos
+    for a in arquivos:
+        j = json.loads(a.read_text(encoding="utf-8"))
+        assert (j.get("origem_efeito") or j.get("meta", {}).get("origem_efeito")) == origem, a.name
+
+
 # ------------------------------------------------------------------ ramo "transportado de MT" (controles insuficientes)
 @pytest.fixture(scope="module")
 def ramo_transportado(ambiente):
     raiz, amb = ambiente
     cfg = _config(raiz, "transp", min_eventos=5, min_controles=10_000, ambiente=amb)
-    _rodar("00_diagnostico.py", cfg)
+    _rodar("00_diagnostico.py", cfg, "--referencia-mt", str(cfg))   # a "referência de MT" é a própria configuração sintética
     _rodar("02_estimar.py", cfg)
     _rodar("04_figuras.py", cfg)
     return cfg, raiz / "reports_transp"
@@ -158,6 +167,9 @@ def test_transportado_regra_e_rotulos(ramo_transportado):
     assert (r["n_eventos"], r["n_controles"]) == (N // 2, N // 2)
     assert set(r["efeito_de_mt_lido_de"]["sha256"]) == {"efeitos_did.csv", "efeitos_por_unidade.csv", "valor.json"}
     _todos_os_csv_tem_origem(rep, "transportado de MT")
+    _todos_os_json_tem_origem(rep, "transportado de MT")
+    ref = json.loads((rep / "diagnostico" / "mt_contagens_referencia.json").read_text(encoding="utf-8"))
+    assert (ref["n_eventos"], ref["n_controles"]) == (N // 2, N // 2) and ref["sigla_referencia"] == "EMS"
     assert json.loads((rep / "valor.json").read_text(encoding="utf-8"))["origem_efeito"] == "transportado de MT"
     assert json.loads((rep / "diagnostico" / "regra_contagens.json").read_text(encoding="utf-8"))["origem_efeito"] == \
         "transportado de MT"
@@ -233,6 +245,7 @@ def test_medido_publica_o_efeito_de_ms_com_o_de_mt_ao_lado(ramo_medido):
     for nome in ("event_study.csv", "efeitos_por_unidade.csv", "robustez.csv", "comparacao_premissas.csv"):
         assert (rep / nome).exists(), nome
     _todos_os_csv_tem_origem(rep, "medido em MS")
+    _todos_os_json_tem_origem(rep, "medido em MS")
     assert json.loads((rep / "valor.json").read_text(encoding="utf-8"))["origem_efeito"] == "medido em MS"
 
 
